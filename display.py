@@ -2,6 +2,13 @@
 # displays info
 
 from weather import *
+from driving import *
 
-hopkins = getWeather("Hopkins")
-minneapolis = getWeather("Hopkins")
+# GET INFO
+##hopkins = getWeather("Hopkins")
+##minneapolis = getWeather("Hopkins")
+
+##school = getTravelInfo('uofm')
+
+# DISPLAY
+
