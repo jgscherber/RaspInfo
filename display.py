@@ -3,4 +3,5 @@
 
 from weather import *
 
-temp = getWeather("Hopkins")
+hopkins = getWeather("Hopkins")
+minneapolis = getWeather("Hopkins")
