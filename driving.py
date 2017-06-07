@@ -1,7 +1,7 @@
 
 # api defaults to return the most "efficient directions" == fastest usually
 
-import urllib2
+from urllib.request import urlopen #python3
 import json
 
 base_url = 'https://maps.googleapis.com/maps/api/directions/json?'
@@ -11,7 +11,7 @@ locations = {'home':'10+10+Lake+St+NE+Hopkins+MN+55344',
             'uofm':'Marcy-Holmes,+Minneapolis,+MN'}
 def getTravelInfo(location):
     # request
-    f = urllib2.urlopen(base_url + 'origin=' + locations['home']
+    f = urlopen(base_url + 'origin=' + locations['home']
         + '&destination=' + locations[location]
         + '&key=AIzaSyBITxDjn0W6T6PqB8BOvizdjq-1skXApX8')
 

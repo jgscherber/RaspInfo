@@ -2,7 +2,7 @@
 
 # get weather for 2 locations in the hourly formats
 
-import urllib2
+from urllib.request import urlopen
 import json
 
 base_url = 'http://api.wunderground.com/api/899a5c58cf01f8c8/'
@@ -22,7 +22,7 @@ class Weather:
 
 def getWeather(city):
     # current weather
-    f = urllib2.urlopen(base_url + 'geolookup/conditions/q/MN/' + city + '.json')
+    f = urlopen(base_url + 'geolookup/conditions/q/MN/' + city + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
     f.close()
@@ -36,7 +36,7 @@ def getWeather(city):
     current_weather = Weather(temp, wind_mph, feelsLike, 0, pop, icon_url)
 
     # hourly weather
-    f = urllib2.urlopen(base_url + 'hourly/q/MN/' + city + '.json')
+    f = urlopen(base_url + 'hourly/q/MN/' + city + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
     f.close()
