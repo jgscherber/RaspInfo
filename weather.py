@@ -54,8 +54,9 @@ def getWeather(city):
         hourlyTemps.append(weather)
     return Location(city,current_weather,hourlyTemps)
 
-##hopkins = getWeather('Hopkins')
-###minneapolis = getWeather('Minneapolis')
-##for x in range(0, len(hopkins.hourly)):
-##    print "Current temperature in %s is: %s" % (hopkins.location, hopkins.hourly[x].temp)
-###print "Current temperature in %s is: %s" % ('Minn', minneapolis.temp)
+def getCurrent(locations):
+    temp = []
+    for x in locations:
+        temp.append(getWeather(x))
+    return temp
+
