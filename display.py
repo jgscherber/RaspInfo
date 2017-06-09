@@ -25,8 +25,7 @@ def updateCurrent():
 ##school = getTravelInfo('uofm')
 
 # SETUP BACKGROUND
-pygame.init()
-updateCurrent()
+pygame.init()               
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (210, 210, 210)
@@ -44,6 +43,9 @@ pygame.draw.rect(MAINSURF, GRAY,
                  (PADDING, WINDOW_HEIGHT // 2 + 2*PADDING, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 3*PADDING), 3) # width = 0 == filled
 
 # SETUP CURRENT WEATHER
+#updateCurrent()
+ICON_SIZE = ((WINDOW_WIDTH // 2) // len(locations) ) - 2*PADDING 
+
 
 # SETUP HOURLY WEATHER
 
@@ -59,7 +61,7 @@ FPS = 1
 WEATHER_COUNT = 0
 while 1:
     # update every 10 minutes
-    WEATHER_COUNT++
+    WEATHER_COUNT += 1
     if(WEATHER_COUNT == 600 * FPS):
         WEATHER_COUNT = 0
         updateCurrent()
