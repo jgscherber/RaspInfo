@@ -47,27 +47,45 @@ pygame.draw.rect(MAIN, GRAY,
 # updateCurrent()
 nCities = len(cities)
 FONT = pygame.font.SysFont('arial',WINDOW_HEIGHT // 20)
-cityTitles = []
-for x in range(0, nCities):
-    tempSurf = FONT.render(cities[x],True, BLACK)
-    cityTitles.append(tempSurf)
+
+
 ICON_SIZE = ((WINDOW_HEIGHT // 2) // nCities+1 ) - 2*PADDING
 weatherImgX = 2*PADDING + 3
 weatherImgY = 2*PADDING + 3
-
+# load images into surfaces
+cityTitles = []
 images = []
-for i in range(0, nCities):
-    img = pygame.image.load(file_path + r"\images\icon" + str(i) + r".png")
-    img = pygame.transform.scale(img, (ICON_SIZE, ICON_SIZE))
-    images.append(img)
-for i in range(0, nCities):
-    img = images[i]
-    MAIN.blit(img, (weatherImgX, weatherImgY))
-    titleRect = cityTitles[i].get_rect()
-    titleRect.topleft = (weatherImgX, weatherImgY)
-    MAIN.blit(cityTitles[i], titleRect)
-    weatherImgY += ICON_SIZE + PADDING
+def loadCurrentImages():
+    global cityTitles, images
 
+    for i in range(0, nCities):
+        img = pygame.image.load(file_path + r"\images\icon" + str(i) + r".png")
+        img = pygame.transform.scale(img, (ICON_SIZE, ICON_SIZE))
+        images.append(img)
+
+        tempSurf = FONT.render(cities[i], True, BLACK)
+        cityTitles.append(tempSurf)
+
+loadCurrentImages()
+
+# place images and titles
+maxCityLength = 0
+def placeCurrentImages():
+    global weatherImgX, weatherImgY, maxCityLength, cityTitles, images
+    for i in range(0, nCities):
+        img = images[i]
+        MAIN.blit(img, (weatherImgX, weatherImgY))
+        titleRect = cityTitles[i].get_rect()
+        titleRect.topleft = (weatherImgX, weatherImgY)
+        if(titleRect.width > maxCityLength):
+            maxCityLength = titleRect.width
+        MAIN.blit(cityTitles[i], titleRect)
+        weatherImgY += ICON_SIZE + PADDING
+placeCurrentImages()
+
+# descriptions
+descX = weatherImgX + maxCityLength + PADDING
+descY = 2*PADDING + 3
 # SETUP HOURLY WEATHER
 
 # SETUP AGENDA
