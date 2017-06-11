@@ -12,12 +12,13 @@ from driving import *
 # GET INFO
 cities = ["Hopkins", "Minneapolis"]
 locations = []
-
+file_path = os.path.dirname(os.path.realpath(__file__))
 def updateCurrent():
+    global locations
     locations = getCurrent(cities)
 
     # download and save image
-    file_path = os.path.dirname(os.path.realpath(__file__))
+    global file_path
     for i in range(0, len(locations)):
         urlretrieve(locations[i].current.icon_url, file_path + r"\images\icon" + str(i) + r".png")
     
@@ -34,18 +35,38 @@ WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 1000
 PADDING = WINDOW_WIDTH // 100
 
-MAINSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),0,32) #FULLSCREEN
-MAINSURF.fill(WHITE)
-pygame.draw.rect(MAINSURF, GRAY,
+MAIN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32) #FULLSCREEN
+MAIN.fill(WHITE)
+pygame.draw.rect(MAIN, GRAY,
                  (PADDING, PADDING, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2), 3) # width = 0 == filled
 
-pygame.draw.rect(MAINSURF, GRAY,
+pygame.draw.rect(MAIN, GRAY,
                  (PADDING, WINDOW_HEIGHT // 2 + 2*PADDING, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 3*PADDING), 3) # width = 0 == filled
 
 # SETUP CURRENT WEATHER
-#updateCurrent()
-ICON_SIZE = ((WINDOW_WIDTH // 2) // len(locations) ) - 2*PADDING 
+# updateCurrent()
+nCities = len(cities)
+FONT = pygame.font.SysFont('arial',WINDOW_HEIGHT // 20)
+cityTitles = []
+for x in range(0, nCities):
+    tempSurf = FONT.render(cities[x],True, BLACK)
+    cityTitles.append(tempSurf)
+ICON_SIZE = ((WINDOW_HEIGHT // 2) // nCities+1 ) - 2*PADDING
+weatherImgX = 2*PADDING + 3
+weatherImgY = 2*PADDING + 3
 
+images = []
+for i in range(0, nCities):
+    img = pygame.image.load(file_path + r"\images\icon" + str(i) + r".png")
+    img = pygame.transform.scale(img, (ICON_SIZE, ICON_SIZE))
+    images.append(img)
+for i in range(0, nCities):
+    img = images[i]
+    MAIN.blit(img, (weatherImgX, weatherImgY))
+    titleRect = cityTitles[i].get_rect()
+    titleRect.topleft = (weatherImgX, weatherImgY)
+    MAIN.blit(cityTitles[i], titleRect)
+    weatherImgY += ICON_SIZE + PADDING
 
 # SETUP HOURLY WEATHER
 
