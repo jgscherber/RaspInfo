@@ -8,8 +8,8 @@ import json
 base_url = 'http://api.wunderground.com/api/899a5c58cf01f8c8/'
 
 class Location(object):
-    def __init__(self, location, current, hourly):
-        self.location = location
+    def __init__(self, city, current, hourly):
+        self.city = city
         self.current = current
         self.hourly = hourly # list of Weather objects
 
@@ -18,6 +18,8 @@ class Weather:
         self.temp = temp
         self.feelsLike = feelsLike
         self.icon_url = icon_url
+        self.rainChance = rainChance
+        self.rainAmount = rainAmount
 
 
 def getWeather(city):
@@ -35,23 +37,24 @@ def getWeather(city):
     pop = icon_url = parsed_json['current_observation']['icon_url']
     current_weather = Weather(temp, wind_mph, feelsLike, 0, pop, icon_url)
 
-    # hourly weather
-    f = urlopen(base_url + 'hourly/q/MN/' + city + '.json')
-    json_string = f.read()
-    parsed_json = json.loads(json_string)
-    f.close()
-    # parse hourly
-    hourly_list = parsed_json['hourly_forecast']
-    hourlyTemps = []
-    for x in range(0, len(hourly_list) // 2):
-        temp = hourly_list[x]['temp']['english']
-        wind_mph = hourly_list[x]['wspd']['english']
-        feelsLike = hourly_list[x]['feelslike']['english']
-        qpf = hourly_list[x]['qpf']['english']
-        pop = hourly_list[x]['pop']
-        icon_url = hourly_list[x]['icon_url']
-        weather = Weather(temp,wind_mph,feelsLike,pop,qpf,icon_url)
-        hourlyTemps.append(weather)
+    # # hourly weather
+    # f = urlopen(base_url + 'hourly/q/MN/' + city + '.json')
+    # json_string = f.read()
+    # parsed_json = json.loads(json_string)
+    # f.close()
+    # # parse hourly
+    # hourly_list = parsed_json['hourly_forecast']
+    # hourlyTemps = []
+    # for x in range(0, len(hourly_list) // 2):
+    #     temp = hourly_list[x]['temp']['english']
+    #     wind_mph = hourly_list[x]['wspd']['english']
+    #     feelsLike = hourly_list[x]['feelslike']['english']
+    #     qpf = hourly_list[x]['qpf']['english']
+    #     pop = hourly_list[x]['pop']
+    #     icon_url = hourly_list[x]['icon_url']
+    #     weather = Weather(temp,wind_mph,feelsLike,pop,qpf,icon_url)
+    #     hourlyTemps.append(weather)
+    hourlyTemps = None
     return Location(city,current_weather,hourlyTemps)
 
 def getCurrent(locations):

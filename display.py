@@ -44,7 +44,7 @@ pygame.draw.rect(MAIN, GRAY,
                  (PADDING, WINDOW_HEIGHT // 2 + 2*PADDING, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 3*PADDING), 3) # width = 0 == filled
 
 # SETUP CURRENT WEATHER
-# updateCurrent()
+#updateCurrent()
 nCities = len(cities)
 FONT = pygame.font.SysFont('arial',WINDOW_HEIGHT // 20)
 
@@ -84,8 +84,14 @@ def placeCurrentImages():
 placeCurrentImages()
 
 # descriptions
-descX = weatherImgX + maxCityLength + PADDING
+descX = weatherImgX + maxCityLength + 3*PADDING
 descY = 2*PADDING + 3
+for loc in locations:
+    currentDescriptions = FONT.render(loc.current.temp, True, BLACK)
+    descRect = currentDescriptions.get_rect()
+    descRect.topleft = (descX,descY)
+    MAIN.blit(currentDescriptions,descRect)
+    descY += ICON_SIZE + PADDING
 # SETUP HOURLY WEATHER
 
 # SETUP AGENDA
