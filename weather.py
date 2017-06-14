@@ -3,9 +3,11 @@
 # get weather for 2 locations in the hourly formats
 
 from urllib.request import urlopen
-import json
+from urllib.request import urlretrieve
+import json, os
 
 base_url = 'http://api.wunderground.com/api/899a5c58cf01f8c8/'
+file_path = os.path.dirname(os.path.realpath(__file__))
 
 class Location(object):
     def __init__(self, city, current, hourly):
@@ -34,7 +36,7 @@ def getWeather(city):
     wind_mph = parsed_json['current_observation']['wind_mph']
     feelsLike = parsed_json['current_observation']['feelslike_string']
     icon_url = parsed_json['current_observation']['icon_url']
-    pop = icon_url = parsed_json['current_observation']['icon_url']
+    pop = parsed_json['current_observation']['icon_url'] # FIX IF NEEDED
     current_weather = Weather(temp, wind_mph, feelsLike, 0, pop, icon_url)
 
     # # hourly weather
@@ -59,7 +61,9 @@ def getWeather(city):
 
 def getCurrent(locations):
     temp = []
-    for x in locations:
-        temp.append(getWeather(x))
+    for loc in locations:
+        weather = getWeather(loc)
+        urlretrieve(weather.current.icon_url, file_path + r"\images\\" + loc + r".jpg")
+        temp.append(weather)
     return temp
 

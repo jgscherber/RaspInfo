@@ -4,83 +4,91 @@ from tkinter import *
 from tkinter import font
 from weather import *
 from driving import *
-from urllib.request import urlretrieve
 from PIL import ImageTk, Image
 
+class InfoApp(Tk): # self is the Tk instance
+    def __init__(self, cities, destinations):
+        Tk.__init__(self)
 
-file_path = os.path.dirname(os.path.realpath(__file__))
+        self.file_path = os.path.dirname(os.path.realpath(__file__))
+        self.titleFont = font.Font(self, family='arial', size=30, weight='bold')
+        self.infoFont = font.Font(self, family='arial', size=14)
 
+        self.cities = cities
+        self.destinations = destinations
+        # create current weather widget
+        self.currentWeather = None # Maintain a reference for killing
+        self.createCurrentWeather()
 
-def updateCurrent(locList):
-    # get info
-    locList = getCurrent(cities)
+        # create drive time widget
+        travelTime = Frame(self, relief='groove', borderwidth=3)
+        for dest in destinations:
+            self.createTravel(travelTime, dest).pack(anchor='w')
 
-    # download and save image
-    for i in range(len(locList)):
-        urlretrieve(locList[i].current.icon_url, file_path + r"\images\\" + locList[i].city + r".jpg")
-    return locList
+        travelTime.pack(anchor='sw')
 
-def createCurrent(root, location): # takes in a Location object (has current and hourly)
-    current = Frame(root, borderwidth=5)
-    # City
-    title = Label(current,text = location.city, font = titleFont)
-    title.grid(row=0,column=0,columnspan=2,sticky='SW')
-    # Image
-    img = ImageTk.PhotoImage(Image.open(file_path + r"\images\\" + location.city + r".jpg"))
-    icon = Label(current, image = img)
-    icon.image = img
-    icon.grid(row=1,column=0,rowspan=3, sticky='W')
-    # Current temp
-    temp = Label(current, text = location.current.temp, font = infoFont)
-    temp.grid(row=1,column=1, sticky='WN')
-    feelsLikeWord = Label(current, text='Feels Like:', font = infoFont)
-    feelsLikeWord.grid(row=2, column=1, sticky='WS')
-    feelsLike = Label(current, text=location.current.feelsLike, font = infoFont)
-    feelsLike.grid(row=3, column=1, sticky='W')
+        self.bind('<Configure>', self.resize)
+        self.geometry('500x250')
+        self.configure(background='white')
 
-    return current
+    def createCurrentWeather(self):
+        self.currentWeather = Frame(self, relief='groove', borderwidth=3)
+        locations = self.downloadCurrentWeather()
+        for loc in locations:
+            self.createCurrentWidget(self.currentWeather, loc).pack(side='left', fill='both', expand=True)
+        self.currentWeather.pack(anchor=NW, fill='both', expand=True)
+        self.after(1800000 , self.refreshCurrentWeather) # every 30 min
 
-def createTravel(root, destination):
-    info = getTravelInfo(destination)
-    return Label(root,text = '{0}: {1} - {2}'.format(
-        info['destination'],info['summary'],info['time']), font = infoFont)
+    def refreshCurrentWeather(self):
+        self.currentWeather.destroy()
+        self.createCurrentWeather()
+        self.after(1800000 , self.refreshCurrentWeather) # every 30 min
 
-def resize(event):
-    windowH=main.winfo_height()
-    if(windowH//15 > 30):
-        titleFont.config(size=30)
-        infoFont.config(size=15)
-    else:
-        titleFont.config(size=windowH//15)
-        infoFont.config(size=windowH//30)
+    def downloadCurrentWeather(self):
+        return getCurrent(self.cities)
 
-main = Tk()
+    def createCurrentWidget(self, root, location): # takes in a Location object (has current and hourly)
+        current = Frame(root, borderwidth=5)
+        # City
+        title = Label(current,text = location.city, font = self.titleFont)
+        title.grid(row=0,column=0,columnspan=2,sticky='SW')
+        # Image (need to resize for final
+        img = ImageTk.PhotoImage(Image.open(self.file_path + r"\images\\" + location.city + r".jpg"))
+        icon = Label(current, image = img)
+        icon.image = img
+        icon.grid(row=1,column=0,rowspan=3, sticky='W')
+        # Current temp
+        temp = Label(current, text = location.current.temp, font = self.infoFont)
+        temp.grid(row=1,column=1, sticky='WN')
+        feelsLikeWord = Label(current, text='Feels Like:', font = self.infoFont)
+        feelsLikeWord.grid(row=2, column=1, sticky='WS')
+        feelsLike = Label(current, text=location.current.feelsLike, font = self.infoFont)
+        feelsLike.grid(row=3, column=1, sticky='W')
 
-titleFont = font.Font(main,family='arial',size=30,weight='bold')
-infoFont = font.Font(main, family='arial',size=14)
+        return current
 
+    def createTravel(self, root, destination):
+        info = getTravelInfo(destination)
+        return Label(root,text = '{0}: {1} - {2}'.format(
+            info['destination'],info['summary'],info['time']), font = self.infoFont)
+
+    def resize(self, event):
+        windowH=self.winfo_height()
+        if(windowH//15 > 30):
+            self.titleFont.config(size=30)
+            self.infoFont.config(size=15)
+        else:
+            self.titleFont.config(size=windowH//15)
+            self.infoFont.config(size=windowH//30)
 
 
 cities = ["Hopkins", "Minneapolis"]
-# cities = ["Hopkins"]
-locations = updateCurrent(cities)
-
-currentWeather = Frame(main,relief = 'groove',borderwidth=3)
-for loc in locations:
-    createCurrent(currentWeather, loc).pack(side='left', fill = 'both',expand=True)
-# fill both directions
-currentWeather.pack(anchor=NW, fill = 'both',expand=True)
-
-destinations = ('uofm','sps','rampA')
-travelTime = Frame(main,relief='groove',borderwidth=3)
-for dest in destinations:
-    createTravel(travelTime, dest).pack()
-
-travelTime.pack(anchor='sw')
+destinations = ('uofm', 'sps', 'rampA')
+root = InfoApp(cities, destinations)
+root.mainloop()
 
 
-main.bind('<Configure>',resize)
-main.geometry('500x250')
-main.configure(background='white')
+
 # main.attributes('-fullscreen', True)
-main.mainloop()
+#main.after(360000, createCurrent, currentWeather, loc)
+#main.after(1000, createTravel,travelTime,dest)
