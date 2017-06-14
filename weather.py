@@ -9,7 +9,7 @@ import json, os
 base_url = 'http://api.wunderground.com/api/899a5c58cf01f8c8/'
 file_path = os.path.dirname(os.path.realpath(__file__))
 
-class Location(object):
+class Location:
     def __init__(self, city, current, hourly):
         self.city = city
         self.current = current
@@ -25,38 +25,25 @@ class Weather:
 
 
 def getWeather(city):
-    # current weather
-    f = urlopen(base_url + 'geolookup/conditions/q/MN/' + city + '.json')
+    f = urlopen(base_url + 'hourly/q/MN/' + city + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
     f.close()
-    location = parsed_json['location']['city']
-    # parse current
-    temp = parsed_json['current_observation']['temperature_string']
-    wind_mph = parsed_json['current_observation']['wind_mph']
-    feelsLike = parsed_json['current_observation']['feelslike_string']
-    icon_url = parsed_json['current_observation']['icon_url']
-    pop = parsed_json['current_observation']['icon_url'] # FIX IF NEEDED
-    current_weather = Weather(temp, wind_mph, feelsLike, 0, pop, icon_url)
-
-    # # hourly weather
-    # f = urlopen(base_url + 'hourly/q/MN/' + city + '.json')
-    # json_string = f.read()
-    # parsed_json = json.loads(json_string)
-    # f.close()
-    # # parse hourly
-    # hourly_list = parsed_json['hourly_forecast']
-    # hourlyTemps = []
-    # for x in range(0, len(hourly_list) // 2):
-    #     temp = hourly_list[x]['temp']['english']
-    #     wind_mph = hourly_list[x]['wspd']['english']
-    #     feelsLike = hourly_list[x]['feelslike']['english']
-    #     qpf = hourly_list[x]['qpf']['english']
-    #     pop = hourly_list[x]['pop']
-    #     icon_url = hourly_list[x]['icon_url']
-    #     weather = Weather(temp,wind_mph,feelsLike,pop,qpf,icon_url)
-    #     hourlyTemps.append(weather)
-    hourlyTemps = None
+    # parse hourly
+    hourly_list = parsed_json['hourly_forecast']
+    hourlyTemps = []
+    for x in range(0, len(hourly_list) // 2):
+        temp = hourly_list[x]['temp']['english']
+        wind_mph = hourly_list[x]['wspd']['english']
+        feelsLike = hourly_list[x]['feelslike']['english']
+        qpf = hourly_list[x]['qpf']['english']
+        pop = hourly_list[x]['pop']
+        icon_url = hourly_list[x]['icon_url']
+        weather = Weather(temp, wind_mph, feelsLike, pop, qpf, icon_url)
+        if x == 0:
+            current_weather = weather
+        else:
+            hourlyTemps.append(weather)
     return Location(city,current_weather,hourlyTemps)
 
 def getCurrent(locations):
@@ -64,6 +51,21 @@ def getCurrent(locations):
     for loc in locations:
         weather = getWeather(loc)
         urlretrieve(weather.current.icon_url, file_path + r"\images\\" + loc + r".jpg")
+        for hr in range(len(weather.hourly)):
+            urlretrieve(weather.hourly[hr].icon_url,
+                        file_path + r"\images\\" + loc + r"Hourly" + str(hr) + r".jpg")
         temp.append(weather)
     return temp
+
+dummyTemp = []
+for i in range(20):
+    temp = str(i)
+    wind_mph = i
+    feelsLike = str(2*i)
+    gpf = i / 2
+    pop = i / 100
+    icon = "http://icons-ak.wxug.com/i/c/k/clear.gif"
+    dummyTemp.append( Weather(temp,wind_mph,feelsLike,gpf,pop,icon))
+dummyCurr = Weather(0, 10, 0, 0.1, 0.9, " ")
+dummyRecord = Location("Nowhere", dummyCurr ,dummyTemp)
 
