@@ -50,22 +50,12 @@ def getCurrent(locations):
     temp = []
     for loc in locations:
         weather = getWeather(loc)
+        print('Retrieving: ' + loc)
         urlretrieve(weather.current.icon_url, file_path + r"\images\\" + loc + r".jpg")
-        for hr in range(len(weather.hourly)):
-            urlretrieve(weather.hourly[hr].icon_url,
-                        file_path + r"\images\\" + loc + r"Hourly" + str(hr) + r".jpg")
+        # for hr in range(12):
+        #     print("Downloading icon...")
+        #     urlretrieve(weather.hourly[hr].icon_url,
+        #                 file_path + r"\images\\" + loc + r"Hourly" + str(hr) + r".jpg")
         temp.append(weather)
     return temp
-
-dummyTemp = []
-for i in range(20):
-    temp = str(i)
-    wind_mph = i
-    feelsLike = str(2*i)
-    gpf = i / 2
-    pop = i / 100
-    icon = "http://icons-ak.wxug.com/i/c/k/clear.gif"
-    dummyTemp.append( Weather(temp,wind_mph,feelsLike,gpf,pop,icon))
-dummyCurr = Weather(0, 10, 0, 0.1, 0.9, " ")
-dummyRecord = Location("Nowhere", dummyCurr ,dummyTemp)
 
