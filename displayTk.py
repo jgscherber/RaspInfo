@@ -51,12 +51,14 @@ class InfoApp(Tk): # self is the Tk instance
         self.createWeather()
         self.after(1800000, self.refreshWeather)  # every 30 min
 
-    def createCurrentWidget(self, root, location): # takes in a Location object (has current and hourly)
+        # takes in a Location object (has current and hourly)
+    def createCurrentWidget(self, root, location): 
         current = Frame(root, bd = 1, relief = 'groove')
         # City
         Label(current,text = location.city, font = self.titleFont).grid(row=0,column=0,columnspan=2,sticky='SW')
-        # Image (need to resize for final
-        img = ImageTk.PhotoImage(Image.open(self.file_path + r"\images\\" + location.city + r".jpg"))
+        # Image (need to resize for final)
+        img = ImageTk.PhotoImage(
+            Image.open(self.file_path + r"\images\\" + location.city + r".jpg"))
         icon = Label(current, image = img)
         icon.image = img
         icon.grid(row=1,column=0,rowspan=2, sticky='E')
@@ -72,14 +74,14 @@ class InfoApp(Tk): # self is the Tk instance
         locFrame = Frame(root)
         hours = len(loc.hourly)
         current_time = datetime.now() + timedelta(hours=1)
-        for hr in range(0, 11):  # LIMIT NUMBER OF RUN WHEN RESIZING
+        # Max of 17 hours pull, change range to set number of hours
+        for hr in range(0, 11):  
             rowFrame = Frame(locFrame, bd = 1, relief = 'groove')
             current_time = current_time + timedelta(hours=1)
             timeWord = current_time.strftime('%I %p').lstrip('0')
             Label(rowFrame, text=timeWord).grid(row=0, column=0)
-            img = ImageTk.PhotoImage(Image.open(
-
-                self.file_path + r"\images\\" + loc.city + r"Hourly" + str(hr) + r".jpg"))
+            img = ImageTk.PhotoImage(
+                Image.open(self.file_path + r"/images/" + loc.city + r"Hourly" + str(hr) + r".jpg"))
             icon = Label(rowFrame, image=img)
             icon.image = img
             icon.grid(row=0, column=1, columnspan=2, rowspan = 2)
@@ -111,8 +113,9 @@ class InfoApp(Tk): # self is the Tk instance
     def refreshTravel(self):
         self.travelTime.destroy()
         self.createTravel()
-        self.after(600000, self.refreshTravel) # 10 minutes
-
+        # set event to refresh after 10 minutes
+        self.after(600000, self.refreshTravel)
+        
     def resize(self, event):
         windowH=self.winfo_height()
         if(windowH//15 > 30):
