@@ -14,6 +14,7 @@ class InfoApp(Tk): # self is the Tk instance
         self.file_path = os.path.dirname(os.path.realpath(__file__))
         self.titleFont = font.Font(self, family='arial', size=30, weight='bold')
         self.infoFont = font.Font(self, family='arial', size=14)
+        self.summaryFont = font.Font(self, family='arial', size=10)
 
         self.cities = cities
         self.destinations = destinations
@@ -104,9 +105,11 @@ class InfoApp(Tk): # self is the Tk instance
         self.travelTime = Frame(self, relief='groove', borderwidth=3)
         for dest in self.destinations:
             info = getTravelInfo(dest)
-            tempLabel = Label(self.travelTime,text = '{0}: {1} - {2}'.format(
-                info['destination'],info['summary'],info['time']), font = self.infoFont)
-            tempLabel.pack()
+            travelHeadLabel = Label(self.travelTime,text = '{0} - {1}'.format(
+                info['destination'],info['time']), font = self.infoFont)
+            travelInfoLabel = Label(self.travelTime, text = info['summary'], font = self.summaryFont)
+            travelHeadLabel.pack()
+            travelInfoLabel.pack()
         self.travelTime.grid(row=0,column=1,sticky=N)
         self.after(600000, self.refreshTravel)  # 10 minutes
 
